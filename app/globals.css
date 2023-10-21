@@ -2,26 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+body{
+  background-color: #CCCCFF;
+  letter-spacing: 0.25ch;
+}
+input[type="text"]{
+  letter-spacing: 0.20ch;
+  text-decoration: none;
+  appearance: none;
+  outline: 0;
+  line-height: 3rem;
+  color: black;
+}
+.faint{
+  color: #60607C;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); scale: 0.8}
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); scale: 1; }
 }
