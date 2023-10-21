@@ -32,7 +32,7 @@ export default function Home(){
         if(playing){
             interval = setInterval(() => {
                 setSeconds((prevSeconds) => prevSeconds + 1);
-                if(seconds === 2){ // time
+                if(seconds === 59){ // time
                     setPlaying(false)
                     isModalOpen(true)
                     setSeconds(0)
