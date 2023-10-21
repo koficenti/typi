@@ -103,7 +103,7 @@ export default function Home(){
         <p>best score: {best} wpm</p>
     </div>
     <h1 className="text-3xl font-black">Welcome {localStorage.getItem("name")}!</h1>
-    <p className="text-xl font-black mt-5">You typed <span className="text-xl">1232</span> words total today!</p>
+    {/* <p className="text-xl font-black mt-5">You typed <span className="text-xl">1232</span> words total today!</p> */}
     <div className="faint font-black text-xl py-20 opacity-80 leading-[3rem] select-none">
         <p className="h-[270px] overflow-hidden flex flex-wrap gap-5 relative" id="words_to_type" onClick={() => inputRef.current && inputRef.current.focus()}>
             <input  aria-autocomplete="none" autoComplete="false" id="typedword" ref={inputRef} autoFocus onChange={e => inputChanged(e)} type="text" className="bg-transparent absolute font-black text-xl"/>

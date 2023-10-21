@@ -10,6 +10,11 @@ export default function Completed({count, call}: {count: number, call: any}){
                 setPercentage(Math.floor((beat/e.average.length) * 100))
             }
         })
+        window.addEventListener("keypress", (e) => {
+            if(e.key == "Enter"){
+                call(false)
+            }
+        })
     }, [])
     return <div className="absolute z-10 bg-[#CCCCFF] top-0 left-0 w-full h-screen flex flex-col gap-14 place-items-center justify-center">
         <h1 className="font-bold text-2xl">You typed {count}wpm and beat {percentage}% of other users. Congrats!</h1>
