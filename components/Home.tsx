@@ -1,16 +1,7 @@
 'use client'
 import { useState, useEffect, useRef, ChangeEvent } from "react"
 import Completed from "./Completed"
-
-const batch = [`apple`, `banana`, `cherry`, `date`, `elderberry`, `fig`, `grape`, `honeydew`, `kiwi`, `lemon`, `mango`, `nectarine`, `orange`, `papaya`, `quince`, `raspberry`, `strawberry`, `tangerine`, `watermelon`, `apricot`, `blueberry`, `cranberry`, `dragonfruit`, `guava`, `kiwifruit`, `lime`, `pomegranate`, `starfruit`, `blackberry`, `cantaloupe`, `durian`, `grapefruit`, `lebkuchen`, `orange`, `peach`, `raspberry`, `tamarind`, `avocado`, `boysenberry`, `cherimoya`, `date`, `elderberry`, `huckleberry`, `loganberry`, `mango`, `persimmon`, `strawberry`, `tomato`, `bellpepper`, `chili`, `garlic`, `horseradish`, `mushroom`, `potato`, `sweetpotato`, `zucchini`, `artichoke`, `broccoli`, `cauliflower`, `ginger`, `kale`, `onion`, `pumpkin`, `turnip`, `asparagus`, `brusselsprout`, `celery`, `greens`, `lettuce`, `parsnip`, `radish`, `spinach`, `zucchini`, `basil`, `caraway`, `cinnamon`, `coriander`, `garlic`, `oregano`, `paprika`, `rosemary`, `thyme`, `cayenne`, `nutmeg`, `tarragon`, `wasabi`, `cumin`, `fennel`, `cardamom`, `chervil`, `cloves`, `dill`, `lavender`, `lemonbalm`, `mace`, `marjoram`, `sage`, `sumac`, `turmeric`, `thyme`, `anise`, `chives`, `dill`, `lemon`, `verbena`, `mint`, `penny`, `royal`, `purslane`, `sorrel`, `borage`, `chicory`, `endive`, `rocket`, `watercress`, `cabbage`, `collard`, `greens`, `kohlrabi`, `kale`, `cauliflower`, `peas`, `bean`, `lentil`, `soybean`, `carrot`, `celery`, `squash`, `courgette`, `eggplant`, `pumpkin`, `beetroot`, `turnip`, `artichoke`, `asparagus`, `parsnip`, `radish`, `horseradish`, `shallot`, `onion`, `leek`, `garlic`, `fennel`, `potato`, `sweetpotato`, `jicama`, `taro`, `yam`, `plantain`, `chayote`, `chili`, `cucumber`, `olive`, `tomato`, `pepper`, `zucchini`, `lettuce`, `cabbage`, `celery`, `cress`, `parsley`, `spinach`, `lemon`, `lime`, `grapefruit`, `orange`, `tangerine`, `banana`, `pineapple`, `grape`, `kiwi`, `papaya`, `watermelon`, `blueberry`, `blackberry`, `strawberry`, `raspberry`, `cherry`, `peach`, `apricot`, `plum`, `pear`, `fig`, `date`, `coconut`, `kiwifruit`, `mango`, `pomegranate`, `passionfruit`, `starfruit`, `dragonfruit`, `guava`, `lychee`, `mangosteen`, `jackfruit`, `durian`, `cranberry`, `gooseberry`, `currant`, `elderberry`, `huckleberry`, `loganberry`, `boysenberry`, `salmonberry`, `cloudberry`, `goji`, `acai`, `bilberry`, `mulberry`, `gooseberry`, `tamarind`, `olive`, `walnut`, `pecan`, `cashew`, `hazelnut`, `almond`, `peanut`, `macadamia`, `chestnut`, `pistachio`, `sunflowerseed`, `sesameseed`, `pumpkinseed`, `flaxseed`, `chia`, `quinoa`, `amaranth`, `barley`, `oats`, `rice`, `wheat`, `corn`, `rye`, `spelt`, `sorghum`, `millet`, `teff`, `buckwheat`, `sugarcane`, `sugarbeet`, `potato`, `sweetpotato`, `yam`, `taro`, `jicama`, `cassava`, `arrowroot`, `salsify`, `parsnip`, `radish`, `horseradish`, `shallot`, `onion`, `leek`, `garlic`, `fennel`, `celery`, `cabbage`, `lettuce`, `spinach`, `kale`, `broccoli`, `cauliflower`, `asparagus`, `artichoke`, `brusselsprout`, `peas`, `bean`, `lentil`, `soybean`, `carrot`, `zucchini`, `beetroot`, `cucumber`, `squash`, `eggplant`, `pepper`, `tomato`, `potato`, `sweetpotato`, `onion`, `garlic`]
-
-const generateWords = (amount: number): string[] => {
-    let text = []
-    for(let i = 0; i <= amount; i++){
-        text.push(batch[Math.floor(Math.random() * batch.length)])
-    }
-    return text
-}
+import { generateWords } from "@/words"
 
 export default function Home(){
     const inputRef = useRef<null | HTMLInputElement>(null)
@@ -19,15 +10,30 @@ export default function Home(){
     const [count, setCount] = useState(0)
     const [best, setBest] = useState(0)
     const [playing, setPlaying] = useState(false)
+    const [pressedSpace, setPressedSpace] = useState(false)
+
     const [modal, isModalOpen] = useState(false)
 
     const [seconds, setSeconds] = useState(0);
 
     useEffect(()=>{
         (localStorage.getItem("best") != null) ? setBest(parseInt(localStorage.getItem("best") as any)) : setBest(0)
+
+        // document.getElementById("typedword")?.addEventListener("keypress", (e: any) => {
+        //     if(e.key == " "){
+        //         setPressedSpace(true)
+        //     }
+        // })
+        setTimeout(()=>{
+            if(inputRef.current){
+                inputRef.current.focus()
+            }
+        }, 500)
+
     }, [])
 
     useEffect(() => {
+
         let interval: any;
         if(playing){
             interval = setInterval(() => {
@@ -49,6 +55,11 @@ export default function Home(){
             words && words.forEach((e: any) => {
                 e.style = ""
             })
+            if(localStorage.getItem("total_words") != null){
+                localStorage.setItem('total_words', "0");
+            }else{
+                localStorage.setItem("total_words", "" + (parseInt(localStorage.getItem("total_words") as any) + count))
+            }
 
             if(localStorage.getItem("best") != null){
                 let best = parseInt(localStorage.getItem("best") as any)
@@ -71,17 +82,31 @@ export default function Home(){
     }, [playing, seconds]);
 
     const inputChanged = (e: ChangeEvent<HTMLInputElement>) => {
+        const currentword = document.querySelector(`div[data-index='${count}']`) as any
+        const tw = document.getElementById("typedword") as any
+        tw.focus()
         if(!playing && !modal){
             setPlaying(true)
         }
-        while(!words[count].startsWith(e.target.value) && e.target.value.length > 0){
-            e.target.value = e.target.value.slice(0, -1)
+
+        // while(!words[count].startsWith(e.target.value) && e.target.value.length > 0){
+        //     e.target.value = e.target.value.slice(0, -1)
+        // }
+
+        if(!words[count].startsWith(e.target.value)){
+            tw.style.color = "red"
+            currentword.style.color = "red"
+        }else{
+            tw.style.color = ""
+            currentword.style.color = ""
         }
-        if(e.target.value == words[count]){
+
+        if(e.target.value.endsWith(" ") && e.target.value.slice(0, -1) === words[count]){
             setCount(last => last + 1)
             e.target.value = ""
+            tw.style.color = ""
+            currentword.style.color = ""
 
-            let currentword = document.querySelector(`div[data-index='${count}']`) as any
             currentword.style.color = "black"
             currentword.style.animation = "shake"
             currentword.style.animationDuration = "500ms"
@@ -94,23 +119,34 @@ export default function Home(){
                 e.target.parentElement?.scrollTo({top: nextword.offsetTop, behavior: "smooth"})
             }
         }
+        // setPressedSpace(false)
     }
 
-    return <div className="px-20 pt-5">
+    const inputFocused = (e: HTMLInputElement) => {
+
+        const currentword = document.querySelector(`div[data-index='${count}']`) as any
+        if(currentword){
+            e.target.style.top = String(currentword.offsetTop + "px")
+            e.target.style.left = String(currentword.offsetLeft + "px")
+        }
+    }
+
+    return <div className="px-10 md:px-32 pt-5">
     {modal ? <Completed call={isModalOpen} count={lastCount}/> : <></>}
     <div className="text-xl faint py-16 leading-10">
         <p>last score: {lastCount} wpm</p>
         <p>best score: {best} wpm</p>
     </div>
-    <h1 className="text-3xl font-black">Welcome {localStorage.getItem("name")}!</h1>
+    <h1 className="text-3xl font-black text-center md:text-left">Welcome {localStorage.getItem("name")}!</h1>
+    <p className="text-xl pt-5 text-center md:text-left">You typed {localStorage.getItem("total_words") ? "0" : localStorage.getItem("total_words")} words total today!</p>
     {/* <p className="text-xl font-black mt-5">You typed <span className="text-xl">1232</span> words total today!</p> */}
     <div className="faint font-black text-xl py-20 opacity-80 leading-[3rem] select-none">
-        <p className="h-[270px] overflow-hidden flex flex-wrap gap-5 relative" id="words_to_type" onClick={() => inputRef.current && inputRef.current.focus()}>
-            <input  aria-autocomplete="none" autoComplete="false" id="typedword" ref={inputRef} autoFocus onChange={e => inputChanged(e)} type="text" className="bg-transparent absolute font-black text-xl"/>
+        <p className="h-[270px] overflow-hidden flex flex-wrap gap-5 relative justify-center md:justify-normal" id="words_to_type" onClick={() => inputRef.current && inputRef.current.focus()}>
             {words.map((word, index) => <div data-index={index} className="inline-block">{word}</div>)}
+            <input autoCapitalize="none" name="very_unique_name" aria-autocomplete="none" autoComplete="false" id="typedword" ref={inputRef} onFocus={e => inputFocused(e)} onChange={e => inputChanged(e)} type="text" className="bg-transparent absolute font-black text-xl"/>
         </p>
     </div>
-    <div className="m-auto flex justify-between w-[80%]">
+    <div className="m-auto flex justify-between w-full md:w-[80%] place-items-center">
         <div id="timer" className="text-lg font-black faint">Time: {seconds} seconds</div>
         <div id="reload" onClick={() => setPlaying(false)} className="cursor-pointer opacity-75 stroke-[#60607C] hover:stroke-black transition-colors duration-200">
             <svg width="41" height="46" viewBox="0 0 41 46" fill="none" xmlns="http://www.w3.org/2000/svg">
