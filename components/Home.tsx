@@ -29,6 +29,18 @@ export default function Home(){
                 inputRef.current.focus()
             }
         }, 500)
+        if (!localStorage.getItem('date')) {
+            localStorage.setItem('date', new Date().toJSON());
+        } else {
+            const storedDate: any = new Date(localStorage.getItem('date') as any);
+            const currentDate: any = new Date();
+            const timeDiff: any = currentDate - storedDate;
+            const oneDay = 24 * 60 * 60 * 1000;
+            if (timeDiff >= oneDay) {
+                localStorage.setItem('total_words', "0")
+                localStorage.setItem('date', currentDate.toJSON());
+            }
+        }
 
     }, [])
 
@@ -55,10 +67,10 @@ export default function Home(){
             words && words.forEach((e: any) => {
                 e.style = ""
             })
-            if(localStorage.getItem("total_words") != null){
+            if(!localStorage.getItem("total_words")){
                 localStorage.setItem('total_words', "0");
             }else{
-                localStorage.setItem("total_words", "" + (parseInt(localStorage.getItem("total_words") as any) + count))
+                localStorage.setItem("total_words", String((parseInt(localStorage.getItem("total_words") as any) + count)))
             }
 
             if(localStorage.getItem("best") != null){
@@ -76,6 +88,7 @@ export default function Home(){
             setCount(0)
             setSeconds(0)
             setWords(generateWords(500))
+            tw.value = ""
             clearInterval(interval)
         }
         return () => clearInterval(interval);
@@ -138,7 +151,7 @@ export default function Home(){
         <p>best score: {best} wpm</p>
     </div>
     <h1 className="text-3xl font-black text-center md:text-left">Welcome {localStorage.getItem("name")}!</h1>
-    <p className="text-xl pt-5 text-center md:text-left">You typed {localStorage.getItem("total_words") ? "0" : localStorage.getItem("total_words")} words total today!</p>
+    <p className="text-xl pt-5 text-center md:text-left">You typed {!localStorage.getItem("total_words") ? "0" : localStorage.getItem("total_words")} words total today!</p>
     {/* <p className="text-xl font-black mt-5">You typed <span className="text-xl">1232</span> words total today!</p> */}
     <div className="faint font-black text-xl py-20 opacity-80 leading-[3rem] select-none">
         <p className="h-[270px] overflow-hidden flex flex-wrap gap-5 relative justify-center md:justify-normal" id="words_to_type" onClick={() => inputRef.current && inputRef.current.focus()}>
