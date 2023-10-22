@@ -122,10 +122,10 @@ export default function Home(){
         // setPressedSpace(false)
     }
 
-    const inputFocused = (e: HTMLInputElement) => {
+    const inputFocused = (e: any) => {
 
         const currentword = document.querySelector(`div[data-index='${count}']`) as any
-        if(currentword){
+        if(currentword && e.target){
             e.target.style.top = String(currentword.offsetTop + "px")
             e.target.style.left = String(currentword.offsetLeft + "px")
         }
